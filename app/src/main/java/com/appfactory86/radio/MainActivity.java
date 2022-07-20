@@ -1,7 +1,9 @@
 package com.appfactory86.radio;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,10 +22,15 @@ public class MainActivity extends AppCompatActivity {
     boolean prepared = false;
     boolean started = false;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Intent intent = new Intent(this, StreamingService.class);
+        startService(intent);
+
         play = findViewById(R.id.button_play);
         play.setEnabled(false);
         play.setText("Loading");
@@ -34,11 +42,11 @@ public class MainActivity extends AppCompatActivity {
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (started){
+                if (started) {
                     started = false;
                     mediaPlayer.pause();
                     play.setText("Play");
-                }else {
+                } else {
                     started = true;
                     mediaPlayer.start();
                     play.setText("Pause");
@@ -48,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private class PlayTask extends AsyncTask<String,Void,Boolean>{
+    private class PlayTask extends AsyncTask<String, Void, Boolean> {
 
         @Override
         protected Boolean doInBackground(String... strings) {
@@ -73,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if(started){
+        if (started) {
             mediaPlayer.pause();
         }
     }
@@ -81,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(started) {
+        if (started) {
             mediaPlayer.start();
         }
     }
@@ -89,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(prepared) {
+        if (prepared) {
             mediaPlayer.release();
         }
     }
