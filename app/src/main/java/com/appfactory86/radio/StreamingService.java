@@ -31,14 +31,14 @@ public class StreamingService extends Service implements MediaPlayer.OnPreparedL
         }
         mediaPlayer.prepareAsync();
 
-        final String CHANNELID = "Foreground Service ID";
+        final String Notification_Channel_ID = "Foreground Service ID";
         NotificationChannel channel = new NotificationChannel(
-                CHANNELID,
-                CHANNELID,
+                Notification_Channel_ID,
+                Notification_Channel_ID,
                 NotificationManager.IMPORTANCE_DEFAULT);
 
         getSystemService(NotificationManager.class).createNotificationChannel(channel);
-        Notification.Builder notificationBuilder = new Notification.Builder(this, CHANNELID)
+        Notification.Builder notificationBuilder = new Notification.Builder(this, Notification_Channel_ID)
                 .setSmallIcon(R.drawable.ic_launcher_radio);
 
         startForeground(101, notificationBuilder.build());
