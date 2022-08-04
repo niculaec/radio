@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
+import android.os.Binder;
 import android.os.IBinder;
 
 
@@ -15,6 +16,31 @@ import java.io.IOException;
 public class StreamingService extends Service implements MediaPlayer.OnPreparedListener {
     private static final String stream = "https://edge126.rcs-rds.ro/profm/profm.mp3";
     MediaPlayer mediaPlayer = new MediaPlayer();
+    private final IBinder binder = new LocalBinder();
+
+    public class LocalBinder extends Binder {
+        StreamingService getService() {
+            return StreamingService.this;
+        }
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        intent.getAction();
+        return binder;
+    }
+
+    public boolean isPlaying() {
+        return mediaPlayer.isPlaying();
+    }
+
+    public void pause() {
+        mediaPlayer.pause();
+    }
+
+    public void resume() {
+        mediaPlayer.start();
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -43,12 +69,6 @@ public class StreamingService extends Service implements MediaPlayer.OnPreparedL
 
         startForeground(101, notificationBuilder.build());
         return super.onStartCommand(intent, flags, startId);
-    }
-    // TODO: Implementation of Binder.
-    @Override
-    public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @Override
