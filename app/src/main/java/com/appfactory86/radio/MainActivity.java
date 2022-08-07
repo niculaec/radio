@@ -1,95 +1,82 @@
 package com.appfactory86.radio;
 
+import static com.appfactory86.radio.Constants.PLAY_ACTION;
+
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.os.AsyncTask;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.view.View;
+import android.os.IBinder;
 import android.widget.Button;
 
-import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
     Button play;
-    String stream = "https://live5uk.antenaplay.ro/zurtv/zurtv/chunklist.m3u8?version=1&session=2yWAQ6LwhooeaRkvPiTz&starttime=1658239079&endtime=1658253509&source=web&token=_wIuPttkafXXjN2LB0atTrtCnaE=";
-    MediaPlayer mediaPlayer;
-    boolean prepared = false;
-    boolean started = false;
+    boolean mBound = false;
+    StreamingService mService;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Intent intent = new Intent(this, StreamingService.class);
+        intent.setAction(PLAY_ACTION);
+        startForegroundService(intent);
+
         play = findViewById(R.id.button_play);
-        play.setEnabled(false);
+        play.setEnabled(true);
         play.setText("Loading");
 
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        new PlayTask().execute(stream);
-
-        play.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (started){
-                    started = false;
-                    mediaPlayer.pause();
-                    play.setText("Play");
-                }else {
-                    started = true;
-                    mediaPlayer.start();
-                    play.setText("Pause");
-                }
+        play.setOnClickListener(v -> {
+            if (mService.isPlaying()) {
+                mService.pause();
+                play.setText("Play");
+            } else {
+                mService.resume();
+                play.setText("Pause");
             }
         });
-        
     }
 
-    private class PlayTask extends AsyncTask<String,Void,Boolean>{
+    private void bindService() {
+        Intent serviceIntent = new Intent(this, StreamingService.class);
+        bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+    }
 
-        @Override
-        protected Boolean doInBackground(String... strings) {
-            try {
-                mediaPlayer.setDataSource(strings[0]);
-                mediaPlayer.prepare();
-                prepared = true;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return prepared;
-        }
 
-        @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            super.onPostExecute(aBoolean);
-            play.setEnabled(true);
-            play.setText("Play");
-        }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindService();
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        if(started){
-            mediaPlayer.pause();
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if(started) {
-            mediaPlayer.start();
-        }
+    protected void onStop() {
+        super.onStop();
+        unbindService(serviceConnection);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if(prepared) {
-            mediaPlayer.release();
-        }
+
     }
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            StreamingService.LocalBinder binder = (StreamingService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mBound = false;
+        }
+    };
 }
