@@ -139,7 +139,6 @@ public class StreamingService extends Service implements MediaPlayer.OnPreparedL
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mediaPlayer.release();
-        mediaPlayer = null;
+        stop();
     }
 }
