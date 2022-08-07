@@ -77,7 +77,7 @@ public class StreamingService extends Service implements MediaPlayer.OnPreparedL
         }
         mediaPlayer.prepareAsync();
 
-        final String Notification_Channel_ID = "Foreground Service ID";
+        final String Notification_Channel_ID = "Foreground Service";
         NotificationChannel channel = new NotificationChannel(
                 Notification_Channel_ID,
                 Notification_Channel_ID,
