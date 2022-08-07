@@ -55,8 +55,15 @@ public class StreamingService extends Service implements MediaPlayer.OnPreparedL
         mediaPlayer.start();
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public void stop() {
+        mediaPlayer.release();
+        mediaPlayer = null;
+    }
+
+    private void start() {
+        if (isServiceStarted) {
+            return;
+        }
         mediaPlayer.setOnPreparedListener(this);
 
         mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
