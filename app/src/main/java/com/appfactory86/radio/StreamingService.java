@@ -18,12 +18,18 @@ import android.os.Binder;
 import android.os.IBinder;
 
 
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+
 import java.io.IOException;
+import java.nio.channels.Channel;
 
 public class StreamingService extends Service implements MediaPlayer.OnPreparedListener {
     private static final String stream = "https://edge126.rcs-rds.ro/profm/profm.mp3";
-    MediaPlayer mediaPlayer = new MediaPlayer();
+    private MediaPlayer mediaPlayer = new MediaPlayer();
     private final IBinder binder = new LocalBinder();
+    private boolean isServiceStarted = false;
 
     public class LocalBinder extends Binder {
         StreamingService getService() {
