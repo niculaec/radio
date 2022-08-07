@@ -70,17 +70,64 @@ public class StreamingService extends Service implements MediaPlayer.OnPreparedL
                 Notification_Channel_ID,
                 NotificationManager.IMPORTANCE_DEFAULT);
 
+        Intent pauseNotificationIntent = new Intent(this, StreamingService.class);
+        Intent resumeNotificationIntent = new Intent(this, StreamingService.class);
+        Intent stopNotificationIntent = new Intent(this, StreamingService.class);
+
+        pauseNotificationIntent.setAction(PAUSE_ACTION);
+        resumeNotificationIntent.setAction(RESUME_ACTION);
+        stopNotificationIntent.setAction(STOP_ACTION);
+
+        PendingIntent pausePendingIntent = PendingIntent.getService(this, 1, pauseNotificationIntent, PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent resumePendingIntent = PendingIntent.getService(this, 2, resumeNotificationIntent, PendingIntent.FLAG_IMMUTABLE);
+        PendingIntent stopPendingIntent = PendingIntent.getService(this, 0, stopNotificationIntent, PendingIntent.FLAG_IMMUTABLE);
+
         getSystemService(NotificationManager.class).createNotificationChannel(channel);
-        Notification.Builder notificationBuilder = new Notification.Builder(this, Notification_Channel_ID)
-                .setSmallIcon(R.drawable.ic_launcher_radio);
+
+        Notification.Builder notificationBuilder = new Notification.Builder(this, Notification_Channel_ID);
+        notificationBuilder.setStyle(new Notification.MediaStyle())
+                .setSmallIcon(R.drawable.ic_launcher_radio)
+                .addAction(R.drawable.ic_launcher_play_foreground, "Play", resumePendingIntent)
+                .addAction(R.drawable.ic_launcher_pause_foreground, "Pause", pausePendingIntent)
+                .addAction(R.drawable.ic_launcher_stop_foreground, "Close", stopPendingIntent)
+                .setContentTitle("Radio")
+                .setAutoCancel(false);
 
         startForeground(101, notificationBuilder.build());
-        return super.onStartCommand(intent, flags, startId);
+        isServiceStarted = true;
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        switch (intent.getAction()) {
+            case PLAY_ACTION: {
+                start();
+            }
+            break;
+            case PAUSE_ACTION: {
+                pause();
+            }
+            break;
+            case RESUME_ACTION: {
+                resume();
+            }
+            break;
+            case STOP_ACTION: {
+                stopForeground(true);
+                stopSelf(startId);
+                stop();
+            }
+            break;
+
+        }
+
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+
+    @Override
     public void onPrepared(MediaPlayer player) {
-        mediaPlayer.start();
+        // mediaPlayer.start();
     }
 
     @Override
