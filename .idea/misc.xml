@@ -3,6 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Java and Android Projects/Android/radio/app/src/main/res/drawable/ic_launcher_play_foreground.xml" value="0.4345" />
+        <entry key="..\:/Java and Android Projects/Android/radio/app/src/main/res/drawable/ic_launcher_pro_fm_icon_background.xml" value="0.4345" />
+        <entry key="..\:/Java and Android Projects/Android/radio/app/src/main/res/layout/activity_main.xml" value="0.575" />
         <entry key="..\:/Users/alexu/AndroidStudioProjects/Radio/app/src/main/res/layout/activity_main.xml" value="0.575" />
       </map>
     </option>
