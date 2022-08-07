@@ -1,5 +1,7 @@
 package com.appfactory86.radio;
 
+import static com.appfactory86.radio.Constants.PLAY_ACTION;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ComponentName;
@@ -15,7 +17,6 @@ public class MainActivity extends AppCompatActivity {
     Button play;
     boolean mBound = false;
     StreamingService mService;
-    static String PLAY_ACTION = "Play";
 
 
     @Override
@@ -24,11 +25,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Intent intent = new Intent(this, StreamingService.class);
         intent.setAction(PLAY_ACTION);
-
         startForegroundService(intent);
 
         play = findViewById(R.id.button_play);
-        play.setEnabled(false);
+        play.setEnabled(true);
         play.setText("Loading");
 
         play.setOnClickListener(v -> {
@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         Intent serviceIntent = new Intent(this, StreamingService.class);
         bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
+
 
     @Override
     protected void onStart() {
